@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import com.laioffer.tinnews.model.Article;
 import com.laioffer.tinnews.model.NewsResponse;
 import com.laioffer.tinnews.repository.NewsRepository;
 
@@ -18,6 +19,12 @@ public class HomeViewModel extends ViewModel {
 
     public void setCountryInput(String country) {
         countryInput.setValue(country);
+    }
+
+    //bonus : change void => LiveData<Boolean>
+    public LiveData<Boolean> setFavoriteArticleInput(Article article) {
+        LiveData<Boolean> resultLiveData = repository.favoriteArticle(article);
+        return resultLiveData;
     }
 
     public LiveData<NewsResponse> getTopHeadlines() {

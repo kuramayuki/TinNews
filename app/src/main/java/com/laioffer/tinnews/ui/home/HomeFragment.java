@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,8 @@ import com.yuyakaido.android.cardstackview.StackFrom;
 import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 
 import java.util.List;
+
+import static java.lang.Boolean.TRUE;
 
 public class HomeFragment extends Fragment implements CardStackListener {
 
@@ -50,6 +53,11 @@ public class HomeFragment extends Fragment implements CardStackListener {
                 .build();
         layoutManager.setRewindAnimationSetting(setting);
         binding.homeCardStackView.rewind();
+        //bonus bonus: after rewind process
+        //TODO
+        //re-like or unlike
+        //unlike => delete from db
+        //re-like => "News Already Saved! "
     }
 
     public HomeFragment() {
@@ -118,6 +126,21 @@ public class HomeFragment extends Fragment implements CardStackListener {
             Log.d("CardStackView", "Unlike" + layoutManager.getTopPosition());
         } else if (direction == Direction.Right) {
             Log.d("CardStackView", "Like" + layoutManager.getTopPosition());
+            Article article = articles.get(layoutManager.getTopPosition() - 1);//-1 => prev card => because already swiped out
+            //bonus bonus: after rewind or reload if article already liked => Toast "News Already Saved!"
+            //TODO
+            //check Article table whether contain the id?
+            viewModel.setFavoriteArticleInput(article).observe( // bonus: add new observe to observe resultLiveData => implement Toast
+                    getViewLifecycleOwner(),
+                    resultLiveData -> {
+                        //bonus: Toast
+                        //if favoriteArticle(article) ture?
+                        if (resultLiveData == TRUE) {
+                            Toast.makeText(getContext(), "News Saved !", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
+
         }
     }
 
