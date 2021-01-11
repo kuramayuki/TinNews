@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.laioffer.tinnews.R;
@@ -23,8 +24,6 @@ public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.Save
         void onOpenDetails(Article article);
         //onRemoveFavorite: remove articles in the saved database
         void onRemoveFavorite(Article article);
-        //if swipe to delete? ItemTouchHelper?
-        //TODO
     }
 
     //1. Supporting Data
@@ -34,6 +33,11 @@ public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.Save
         articles.clear();
         articles.addAll(newsList);
         notifyDataSetChanged();
+    }
+
+    //bonus: get article position for onSwiped to delete
+    public Article getArticleAt(int position) {
+        return articles.get(position);
     }
 
     //after get articles if itemCallBack

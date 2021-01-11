@@ -5,12 +5,15 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.laioffer.tinnews.R;
 import com.laioffer.tinnews.databinding.FragmentSaveBinding;
@@ -69,11 +72,27 @@ public class SaveFragment extends Fragment {
                             }
                         }
                 );
+        //bonus: swipe to delete, using ItemTouchHelper
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                viewModel.deleteSavedArticle(savedNewsAdapter.getArticleAt(viewHolder.getAdapterPosition()));
+                Toast.makeText(getActivity(), "News Deleted", Toast.LENGTH_SHORT).show();
+
+            }
+        }).attachToRecyclerView(binding.newsSavedRecyclerView);
     }
+
+    //future implement: menu option - delete all news
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 }
