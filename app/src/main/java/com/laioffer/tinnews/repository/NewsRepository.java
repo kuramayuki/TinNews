@@ -13,6 +13,8 @@ import com.laioffer.tinnews.model.NewsResponse;
 import com.laioffer.tinnews.network.NewsApi;
 import com.laioffer.tinnews.network.RetrofitClient;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -98,9 +100,17 @@ public class NewsRepository {
 
     public LiveData<Boolean> favoriteArticle(Article article) {
         MutableLiveData<Boolean> resultLiveData = new MutableLiveData<>();
-        new FavoriteAsyncTask(database, resultLiveData).execute(article);
+        new FavoriteAsyncTask(database, resultLiveData).execute(article);//as we care the result true/false, so we create FavoriteAsyncTask
         return resultLiveData;
     }
 
+    //APIs for SaveFragment
+    public LiveData<List<Article>> getAllSavedArticles() {
+        return database.articleDao().getAllArticles();//read is not required to be async, but write is need=> so we need FavoriteAsyncTask in favorite features
+    }
+
+    public void deleteSavedArticle(Article article) {
+        AsyncTask.execute(() -> database.articleDao().deleteArticle(article));//when not care about the result, we can use AsyncTask
+    }
 
 }

@@ -29,8 +29,6 @@ import com.yuyakaido.android.cardstackview.SwipeAnimationSetting;
 
 import java.util.List;
 
-import static java.lang.Boolean.TRUE;
-
 public class HomeFragment extends Fragment implements CardStackListener {
 
     private HomeViewModel viewModel;
@@ -111,7 +109,7 @@ public class HomeFragment extends Fragment implements CardStackListener {
                                 //Log.d("HomeFragment", newsResponse.toString());
                             }
                         });
-
+        //implement saved toast  here
     }
 
 
@@ -135,12 +133,11 @@ public class HomeFragment extends Fragment implements CardStackListener {
                     resultLiveData -> {
                         //bonus: Toast
                         //if favoriteArticle(article) ture?
-                        if (resultLiveData == TRUE) {
+                        if (resultLiveData) {
                             Toast.makeText(getContext(), "News Saved !", Toast.LENGTH_SHORT).show();
                         }
                     }
             );
-
         }
     }
 
