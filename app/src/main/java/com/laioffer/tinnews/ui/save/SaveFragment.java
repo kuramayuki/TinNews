@@ -45,7 +45,6 @@ public class SaveFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @NonNull Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         SavedNewsAdapter savedNewsAdapter = new SavedNewsAdapter();
         binding.newsSavedRecyclerView.setAdapter(savedNewsAdapter);
         binding.newsSavedRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -62,6 +61,11 @@ public class SaveFragment extends Fragment {
             @Override
             public void onRemoveFavorite(Article article) {
                 viewModel.deleteSavedArticle(article);
+                //binding.newsSavedRecyclerView.getAdapter().notifyItemRemoved(holderPos);
+                //Log.i("Xue delete pos", "delete Position " + holderPos);
+                //toast is currently hardcode
+                //will implement deleteAsyncTask to make delete has a LiveData return
+                //which indicated whether the deletion is completed from room database
                 Toast.makeText(getActivity(), "News Unsaved", Toast.LENGTH_SHORT).show();
             }
         });
@@ -78,16 +82,16 @@ public class SaveFragment extends Fragment {
                             }
                         }
                 );
-        //bonus: swipe to delete, using ItemTouchHelper
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT|ItemTouchHelper.UP|ItemTouchHelper.DOWN) {
+        //bonus: swipe to delete, using ItemTouchHelper w/ delete animation
+        //bonus: drag to reorder
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN,
+                ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 int fromPosition = viewHolder.getAdapterPosition();
                 int toPosition = target.getAdapterPosition();
-
                 //swipe article position
-                //?How to change to Room database?
+                //?How to change to Room database? NEED SOME WORKs on DAO
                 //TODO
                 binding.newsSavedRecyclerView.getAdapter().notifyItemMoved(fromPosition, toPosition);
 
@@ -96,7 +100,13 @@ public class SaveFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                viewModel.deleteSavedArticle(savedNewsAdapter.getArticleAt(viewHolder.getAdapterPosition()));
+                int removedPosition = viewHolder.getAdapterPosition();
+                Article removedArticle = savedNewsAdapter.getArticleAt(removedPosition); //will used for UNDO feature
+                viewModel.deleteSavedArticle(removedArticle);
+                //now the toast is hardcode, will implement deleteAsyncTask to make delete feature has a LiveData return
+                //which indicated whether the deletion is completed from room database
+                binding.newsSavedRecyclerView.getAdapter().notifyItemRemoved(removedPosition);
+                Log.i("Xue swipe pos", "removedPosition " + removedPosition);
                 Toast.makeText(getActivity(), "News Deleted", Toast.LENGTH_SHORT).show();
 
             }

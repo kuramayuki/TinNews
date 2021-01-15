@@ -54,6 +54,10 @@ public class NewsRepository {
             liveData.setValue(success);
         }
     }
+    //reorderAsyncTask -> change order of article as drag and reorder in Save Page happened
+    //TODO
+    //deleteAsyncTask with Undo -> return a boolean whether deletion is complete to unFavorite and swipe to delete
+    //TODO
 
     public LiveData<NewsResponse> getTopHeadlines(String country) {
         MutableLiveData<NewsResponse> topHeadlinesLiveData = new MutableLiveData<>();

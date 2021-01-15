@@ -1,6 +1,7 @@
 package com.laioffer.tinnews.model;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -33,6 +34,8 @@ public class Article implements Serializable {
                 Objects.equals(url, article.url) &&
                 Objects.equals(urlToImage, article.urlToImage);
     }
+    //add parse process to author name => sometimes API bug contains xml symbol
+    //add parse process to publishedAt date => contain 'T' and 'Z', don't want and want nicer style
 
     @Override
     public int hashCode() {
