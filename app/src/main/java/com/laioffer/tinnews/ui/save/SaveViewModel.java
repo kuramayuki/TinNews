@@ -22,4 +22,8 @@ public class SaveViewModel extends ViewModel {
     public void deleteSavedArticle(Article article) {
         repository.deleteSavedArticle(article);
     }
+
+    public void updateSavedArticles(List<Article> articles) {
+        repository.updateArticle(articles);
+    }
 }

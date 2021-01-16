@@ -117,4 +117,8 @@ public class NewsRepository {
         AsyncTask.execute(() -> database.articleDao().deleteArticle(article));//when not care about the result, we can use AsyncTask
     }
 
+    public void updateArticle(List<Article> articles) {
+        AsyncTask.execute(() -> database.articleDao().updateArticle(articles));
+    }
+
 }

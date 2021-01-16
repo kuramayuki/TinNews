@@ -2,6 +2,7 @@ package com.laioffer.tinnews.ui.save;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,18 +22,37 @@ import com.laioffer.tinnews.model.Article;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.SavedNewsViewHolder> {
 
-    //my own on click listener
+    public void onItemMoved(int fromPosition, int toPosition) {
+        Collections.swap(articles, fromPosition, toPosition);
+        itemCallback.updateArticles(articles);
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+//    public void onItemDismiss(int position) {
+//        Article article = articles.get(position);
+//        itemCallback.onRemoveFavorite(article);
+//        notifyItemRemoved(position);
+//    }
 
 
     interface  ItemCallback {
         //onOpenDetails: opening a new fragment for article detail
         void onOpenDetails(Article article);
         //onRemoveFavorite: remove articles in the saved database
-        void onRemoveFavorite(Article article);
+        void onRemoveFavorite(Article article, int position);
+
+        void updateArticles(List<Article> articles);
+    }
+
+    //after get articles if itemCallBack
+    private ItemCallback itemCallback;
+    public void setItemCallback(ItemCallback itemCallback) {
+        this.itemCallback = itemCallback;
     }
 
     //1. Supporting Data
@@ -50,18 +70,12 @@ public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.Save
         return articles.get(position);
     }
 
-    //after get articles if itemCallBack
-    private ItemCallback itemCallback;
-    public void setItemCallback(ItemCallback itemCallback) {
-        this.itemCallback = itemCallback;
-    }
-
     //2. Adapter overrides
     @NonNull
     @Override
     public SavedNewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.saved_news_item, parent, false);
-        return new SavedNewsViewHolder(view);
+        return new SavedNewsViewHolder(view, itemCallback, articles);
     }
 
     @Override
@@ -74,11 +88,16 @@ public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.Save
         holder.authorTextView.setText(article.author);
         holder.descriptionTextView.setText(article.description);
         //check if image is null
+
         if (article.urlToImage != null) {
             Picasso.get().load(article.urlToImage).into(holder.imageView);
+        } else {
+            Log.d("XueImage:", holder.imageView.toString());
+            //set default image
+            //TODO
         }
-        holder.favoriteIcon.setOnClickListener(v -> itemCallback.onRemoveFavorite(article));
-        holder.itemView.setOnClickListener(v -> itemCallback.onOpenDetails(article));
+        //holder.favoriteIcon.setOnClickListener(v -> itemCallback.onRemoveFavorite(article));
+        //holder.itemView.setOnClickListener(v -> itemCallback.onOpenDetails(article));
     }
 
     //bonus: load cardView w/ slide in left animation
@@ -105,7 +124,7 @@ public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.Save
         ImageView imageView;
         CardView cardView;//bonus: create reference to the whole item cardView for animation
 
-        public SavedNewsViewHolder(@NonNull View itemView) {
+        public SavedNewsViewHolder(@NonNull View itemView, ItemCallback itemCallback,List<Article> articles ) {
             super(itemView);
             SavedNewsItemBinding binding = SavedNewsItemBinding.bind(itemView);
             titleTextView = binding.savedItemTitleTextView;
@@ -115,6 +134,19 @@ public class SavedNewsAdapter extends RecyclerView.Adapter<SavedNewsAdapter.Save
             favoriteIcon = binding.savedItemFavoriteImageView;
             imageView = binding.savedItemImageView;
             cardView = binding.savedItemContainer;
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    itemCallback.onOpenDetails(articles.get(position));
+                }
+            });
+            favoriteIcon.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    itemCallback.onRemoveFavorite(articles.get(position), position);
+                }
+            });
         }
     }
 }
